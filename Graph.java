@@ -2,9 +2,9 @@ import java.io.*;
 import java.util.*;
 
 public class Graph {
-    private final List<Node> nodes;
-    private final List<Edge> edges;
-    Random rand = new Random();
+    private List<Node> nodes;
+    private List<Edge> edges;
+
     public Graph(){
         this.nodes = new ArrayList<Node>();
         this.edges = new ArrayList<Edge>();
@@ -19,9 +19,9 @@ public class Graph {
         nodes.add(node);
     }
 
-    private void addEdge(int laneId, int sourceLocNo, int destLocNo, int duration) {
-        Edge lane = new Edge(laneId, nodes.get(sourceLocNo), nodes.get(destLocNo), duration);
-        edges.add(lane);
+    private void addEdge(int edgeId, int source, int destination, int weight) {
+        Edge edge = new Edge(edgeId, nodes.get(source), nodes.get(destination), weight);
+        edges.add(edge);
     }
 
     public List<Node> getNodes() {
@@ -37,7 +37,7 @@ public class Graph {
         String line;
         String[] tabsTString;
         int val = 1;
-        int ed = 1;
+        int id = 1;
         line = br.readLine();
         tabsTString = line.split(",");
 
@@ -46,30 +46,98 @@ public class Graph {
             if (tabsTString.length == 2) {
                 addNode(val++, tabsTString[1]);
             } else if (tabsTString.length == 3) {
-                addEdge(ed++, Integer.parseInt(tabsTString[0]) - 1,
+                addEdge(id++, Integer.parseInt(tabsTString[0]) - 1,
                         Integer.parseInt(tabsTString[1]) - 1, Integer.parseInt(tabsTString[2]));
-                addEdge(ed++, Integer.parseInt(tabsTString[1]) - 1,
+                addEdge(id++, Integer.parseInt(tabsTString[1]) - 1,
                         Integer.parseInt(tabsTString[0]) - 1, Integer.parseInt(tabsTString[2]));
             }
         }
         br.close();
     }
-    public void createRandom(){
-        List<String> name = new ArrayList<>(List.of("A","B","C","D","E","F","G","H","I","J"));
-        int j = 0;
-        int nbVertex = rand.nextInt(10)+1;
-        int nbEdge = rand.nextInt((nbVertex*(nbVertex-1))/2)+1;
-        for (int i = 0; i < nbVertex; i++) {
-            String nodeName = name.get(rand.nextInt(name.size()));
-            addNode(i,nodeName);
-            name.remove(nodeName);
+
+    private List<String> nodeNameGenerator (int numOfNodes){
+        List<String> nodesNames = new ArrayList<String>();
+        for (int i = 0; i < numOfNodes; i++){
+            if(i+65 <=90)
+                nodesNames.add(Character.toString((char) i+65));
+            else
+                nodesNames.add( i + "");
         }
-        while( j < nbEdge){
-            int edgeFrom = nodes.get(rand.nextInt(nbVertex)).getId();
-            int edgeTo = nodes.get(rand.nextInt(nbVertex)).getId();
-            if(edgeFrom != edgeTo){
-                addEdge(j++,edgeFrom,edgeTo,rand.nextInt(1000)+1);
+        return nodesNames;
+    }
+    private void generateNodes (int numOfNodes){
+        List<String> nodeNames = nodeNameGenerator(numOfNodes);
+        for (int i = 0; i < numOfNodes; i++) {
+            addNode(i,nodeNames.get(i));
+        }
+    }
+    public void createRandom(int maxNodes){
+        if (maxNodes >0){
+            Random rand= new Random();
+            int numOfNodes =rand.nextInt(maxNodes);
+            int numOfEdges = rand.nextInt(((numOfNodes*(numOfNodes-1))/2)+1);
+            generateNodes(numOfNodes);
+
+            int i=0;
+            int edgeFrom=0, edgeTo= 0;
+            while( i< numOfEdges && isConnected()){
+                while(edgeFrom == edgeTo){
+                    edgeFrom = nodes.get(rand.nextInt(numOfNodes)).getId();
+                    edgeTo= nodes.get(rand.nextInt(numOfNodes)).getId();
+                }
+                addEdge(i,edgeFrom,edgeTo,rand.nextInt((int)Integer.MAX_VALUE/200));
+                addEdge(i,edgeTo,edgeFrom,rand.nextInt((int)Integer.MAX_VALUE/200));
+
+                i++;
+            }
+        }
+        
+    }
+
+
+    private void DFS(int source, List<Node> adjList, boolean[] visited){
+        Node nodeSource = nodes.get(source);
+        visited[source] = true;
+        List<Node> neighbors = new ArrayList<Node>();
+
+        // Parcour des voisins
+        for (Edge edge : edges) {
+            if (edge.getSource().equals(nodeSource) && !visited [edge.getDestination().getId()-1]) {
+                neighbors.add(edge.getDestination());
+                for (int i = 0; i < neighbors.size(); i++) {
+                    if(!visited[neighbors.get(i).getId()-1]){
+                        visited[neighbors.get(i).getId()-1] = true;
+                        DFS(neighbors.get(i).getId()-1, adjList, visited);
+                    }
+                }
             }
         }
     }
+
+    public boolean isConnected(){
+
+        int lenNodes = nodes.size();
+        List<Node> adjList = nodes;
+
+        //created visited array
+        boolean[] visited = new boolean[lenNodes];
+        //Commence la première recherche
+        DFS(0, adjList, visited);
+        System.out.println(Arrays.toString(visited));
+
+        //verifie que tous les noeux ont été visités
+        int count = 0;
+        for (int i = 0; i <visited.length ; i++) {
+            if(visited[i])
+                count++;
+        }
+        if(lenNodes==count){
+            System.out.println("Le graphe est connexe");
+            return true;
+        }
+        
+        System.out.println("Le graphe n'est connexe");
+        return false;
+    }
+
 }

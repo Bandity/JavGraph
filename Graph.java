@@ -139,5 +139,44 @@ public class Graph {
         System.out.println("Le graphe n'est connexe");
         return false;
     }
+    public static int cycle(Graph graph){
+        int longueur = 0;
+        int dist = Integer.MAX_VALUE;
+        Node v = graph.nodes.get(0);
+        ArrayList<Node> visite = new ArrayList<>(graph.nodes);
+        for(int i=0; i < graph.nodes.size(); i++){
+            for(Edge e : graph.edges) {
+                if (e.getSource() == v && visite.contains(e.getSource())) {
+                    if (dist > e.getWeight() && e.getWeight() != 0) {
+                        dist = e.getWeight();
+                        v = e.getDestination();
+                        visite.remove(e.getSource());
+                        System.out.println(e.getDestination());
+                    }
+                }
+            }
+            /*System.out.println(longueur);*/
+            longueur += dist;
+        }
+        return longueur;
+    }
 
+    public static int cycleOpti(Graph graph){
+        int dist;
+        int dist2 = Integer.MAX_VALUE;
+        int longueur = 0 ;
+        ArrayList<Node> visite = new ArrayList<>(graph.nodes);
+        Dijkstra dijkstra = new Dijkstra(graph);
+        int chemin[][] = dijkstra.getDistanceMatrix(graph);
+        for(int i = 0; i < chemin.length; i++){
+            for (int j = 0; j < chemin[i].length; j++){
+                dist = chemin[i][j];
+                if(dist2>dist || dist != 0){
+                    dist2 = dist;
+                }
+            }
+            longueur += dist2;
+        }
+        return longueur;
+    }
 }

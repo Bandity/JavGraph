@@ -15,11 +15,11 @@ public class Test {
         Dijkstra dijkstra = new Dijkstra(graph);
         System.out.println(Arrays.deepToString(dijkstra.getDistanceMatrix(graph)));
         graph.isConnected();
-        System.out.println(Graph.cycleOpti(graph));
+        System.out.println(Graph.optimalCycle(graph));
 
         graph2.createRandom(10);
         System.out.println(graph2.getNodes());
         graph2.isConnected();
-        System.out.println(Graph.cycleOpti(graph2));
+        System.out.println(Graph.optimalCycle(graph2));
     }
 }

@@ -161,22 +161,22 @@ public class Graph {
         return longueur;
     }
 
-    public static int cycleOpti(Graph graph){
-        int dist;
-        int dist2 = Integer.MAX_VALUE;
-        int longueur = 0 ;
-        ArrayList<Node> visite = new ArrayList<>(graph.nodes);
+    public static int optimalCycle(Graph graph){
+        int distance;
+        int tempDistance = Integer.MAX_VALUE;
+        int length = 0;
         Dijkstra dijkstra = new Dijkstra(graph);
-        int chemin[][] = dijkstra.getDistanceMatrix(graph);
-        for(int i = 0; i < chemin.length; i++){
-            for (int j = 0; j < chemin[i].length; j++){
-                dist = chemin[i][j];
-                if(dist2>dist || dist != 0){
-                    dist2 = dist;
+        int distanceMatrix[][] = dijkstra.getDistanceMatrix(graph);
+        
+        for(int i = 0; i < distanceMatrix.length; i++){
+            for (int j = 0; j < distanceMatrix[i].length; j++){
+                distance = distanceMatrix[i][j];
+                if(tempDistance>distance || distance != 0){
+                    tempDistance = distance;
                 }
             }
-            longueur += dist2;
+            length += tempDistance;
         }
-        return longueur;
+        return length;
     }
 }

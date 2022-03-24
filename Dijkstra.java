@@ -1,4 +1,3 @@
-package src;
 import java.util.*;
 
 public class Dijkstra {
@@ -20,7 +19,7 @@ public class Dijkstra {
         settledNodes = new ArrayList<Node>(); // Nodes verifiés
         unSettledNodes = new ArrayList<Node>(); // Nodes non verifiés
         distance = new HashMap<Node, Integer>(); // Distance entre la source e Node dans l'HashMap
-        predecessors = new HashMap<Node, Node>(); // prédécesseurs 
+        predecessors = new HashMap<Node, Node>(); // prédécesseurs
         distance.put(source, 0); // Source jusqu'à la source il y a une destination 0
         unSettledNodes.add(source); // Mettre la source comme non traiter
         while (unSettledNodes.size() > 0) {
@@ -30,7 +29,7 @@ public class Dijkstra {
             findMinimalDistances(node);
         }
     }
-    
+
     private Node getMinimum(List<Node> nodes) {
         Node minimum = null;
         for (Node node : nodes) {
@@ -45,7 +44,6 @@ public class Dijkstra {
         return minimum;
     }
 
-
     private int getShortestDistance(Node destination) {
         Integer d = distance.get(destination);
         if (d == null) { // return une distance colosale
@@ -59,7 +57,9 @@ public class Dijkstra {
         List<Node> neighbors = getNeighbors(node);
         for (Node target : neighbors) {
             if (getShortestDistance(target) > getShortestDistance(node) + getDistance(node, target)) {
-                distance.put(target, getShortestDistance(node) + getDistance(node, target)); // Mettre la distance entre la source et la destination
+                distance.put(target, getShortestDistance(node) + getDistance(node, target)); // Mettre la distance entre
+                                                                                             // la source et la
+                                                                                             // destination
                 predecessors.put(target, node); // Mettre la source prédécesseur de destination
                 unSettledNodes.add(target); // Maittre le node target comme non traiter dans le set
             }
@@ -87,12 +87,9 @@ public class Dijkstra {
         return neighbors;
     }
 
-
-
     private boolean isSettled(Node vertex) {
         return settledNodes.contains(vertex);
     }
-
 
     public LinkedList<Node> getPath(Node target) {
         LinkedList<Node> path = new LinkedList<Node>();
@@ -111,33 +108,30 @@ public class Dijkstra {
         return path;
     }
 
-    public int[][] getDistanceMatrix(Graph graph) {
-        int nodeLength = graph.getNodes().size();
+    public int[][] getDistanceMatrix() {
+        int nodeLength = listOfNodes.size();
         int[][] distanceMatrix = new int[nodeLength][nodeLength];
         LinkedList<Node> nodes = new LinkedList<Node>();
-        listOfNodes = graph.getNodes();
-        listOfEdges = graph.getEdges();
 
         for (int i = 0; i < nodeLength; i++) {
             this.execute(listOfNodes.get(i));
 
-            for (int j = 0; j < nodeLength ;j++){
-                nodes =this.getPath(listOfNodes.get(j));
+            for (int j = 0; j < nodeLength; j++) {
+                nodes = getPath(listOfNodes.get(j));
 
-                if (nodes == null){
-                    distanceMatrix[i][j]=0;
-                }
-                else{
+                if (nodes == null) {
+                    distanceMatrix[i][j] = 0;
+                } else {
                     int calculate = 0;
 
-                    for( int k = 0; k < nodes.size(); k++ ){
-                        if(k+1 < nodes.size()){
-                            calculate += this.getDistance(nodes.get(k), nodes.get(k+1)); 
+                    for (int k = 0; k < nodes.size(); k++) {
+                        if (k + 1 < nodes.size()) {
+                            calculate += getDistance(nodes.get(k), nodes.get(k + 1));
                         }
                     }
 
                     distanceMatrix[i][j] = calculate;
-                    calculate =0;
+                    calculate = 0;
                 }
             }
         }

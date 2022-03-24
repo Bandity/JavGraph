@@ -1,4 +1,4 @@
-package src;
+
 public class Node {
     private int id;
     private String name;
